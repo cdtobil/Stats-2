@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUS819D – Statistics for Business Research | Part 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e1521;
+  --surface: #162033;
+  --card: #1c2b40;
+  --border: #243347;
+  --accent: #3b82f6;
+  --gold: #f59e0b;
+  --green: #10b981;
+  --red: #ef4444;
+  --purple: #8b5cf6;
+  --teal: #14b8a6;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --white: #ffffff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* PROGRESS */
+#progress-bar {
+  position: fixed; top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--purple));
+  width: 0%; transition: width 0.4s ease; z-index: 1000;
+}
+
+/* NAV */
+nav {
+  position: fixed; bottom: 1.8rem; left: 50%;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 0.8rem;
+  background: rgba(22,32,51,0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  padding: 0.65rem 1.4rem; border-radius: 50px; z-index: 999;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+nav button {
+  background: none; border: none; color: var(--text);
+  font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; padding: 0.3rem 0.9rem; border-radius: 30px;
+  transition: background 0.2s;
+}
+nav button:hover { background: rgba(255,255,255,0.1); }
+nav button:disabled { opacity: 0.3; cursor: default; }
+nav button:disabled:hover { background: none; }
+#slide-counter { color: var(--muted); font-size: 0.8rem; min-width: 65px; text-align: center; }
+
+/* SLIDES */
+.slide {
+  display: none; min-height: 100vh;
+  padding: 5rem 1.5rem 8rem;
+  flex-direction: column; justify-content: center; align-items: center;
+  animation: fadeUp 0.45s ease;
+}
+.slide.active { display: flex; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.inner { max-width: 900px; width: 100%; }
+
+/* COVER */
+.slide-cover {
+  background: radial-gradient(ellipse at 70% 30%, rgba(59,130,246,0.18) 0%, transparent 60%),
+              radial-gradient(ellipse at 20% 80%, rgba(139,92,246,0.15) 0%, transparent 60%),
+              var(--bg);
+  text-align: center;
+}
+.cover-tag {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  color: #fff; font-weight: 700; font-size: 0.72rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 0.4rem 1.2rem; border-radius: 30px; margin-bottom: 2rem;
+}
+.cover-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 800;
+  line-height: 1.1; margin-bottom: 1.2rem;
+}
+.cover-title span { color: var(--accent); }
+.cover-sub { font-size: 1.05rem; color: var(--muted); margin-bottom: 2.5rem; max-width: 520px; line-height: 1.7; }
+.cover-pills { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; }
+.pill {
+  border: 1px solid var(--border); border-radius: 30px;
+  padding: 0.4rem 1rem; font-size: 0.82rem; color: var(--muted);
+}
+
+/* SECTION HEADER */
+.slide-section {
+  background: linear-gradient(135deg, #0f1f36 0%, #1a0f36 100%);
+  text-align: center; position: relative; overflow: hidden;
+}
+.slide-section::before {
+  content: attr(data-num);
+  position: absolute; font-family: 'Playfair Display', serif;
+  font-size: 20rem; font-weight: 800; opacity: 0.04;
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  pointer-events: none; white-space: nowrap;
+}
+.sec-label {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 1rem;
+}
+.sec-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 700;
+  margin-bottom: 1rem; line-height: 1.15;
+}
+.sec-title span { color: var(--gold); }
+.sec-desc { font-size: 1rem; color: var(--muted); max-width: 520px; line-height: 1.7; }
+
+/* LABELS & HEADINGS */
+.label {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem;
+}
+.heading {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 700;
+  line-height: 1.2; margin-bottom: 1.2rem;
+}
+.heading em { color: var(--gold); font-style: normal; }
+.body-text { font-size: 1rem; line-height: 1.75; color: #b8c8dc; margin-bottom: 1.2rem; }
+
+/* CARDS GRID */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem; margin-top: 1.2rem; }
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 1.3rem; transition: transform 0.2s, border-color 0.2s;
+}
+.card:hover { transform: translateY(-3px); border-color: var(--accent); }
+.card-icon { font-size: 1.8rem; margin-bottom: 0.6rem; }
+.card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--white); }
+.card p { font-size: 0.86rem; line-height: 1.55; color: var(--muted); }
+
+/* EXAMPLE BOX */
+.example {
+  background: rgba(59,130,246,0.08);
+  border: 1px solid rgba(59,130,246,0.3);
+  border-radius: 12px; padding: 1.1rem 1.4rem; margin-top: 1.1rem;
+}
+.example .ex-label {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 0.4rem;
+}
+.example p { font-size: 0.93rem; line-height: 1.65; color: #c0d4ec; }
+
+/* CALLOUT */
+.callout {
+  background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3);
+  border-radius: 12px; padding: 1.1rem 1.4rem; margin-top: 1.1rem;
+  font-size: 0.93rem; line-height: 1.65; color: #f0d080;
+}
+.callout strong { color: var(--gold); }
+
+.callout-green {
+  background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3);
+  border-radius: 12px; padding: 1.1rem 1.4rem; margin-top: 1.1rem;
+  font-size: 0.93rem; line-height: 1.65; color: #9cf0d4;
+}
+.callout-green strong { color: var(--green); }
+
+.callout-red {
+  background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 12px; padding: 1.1rem 1.4rem; margin-top: 1.1rem;
+  font-size: 0.93rem; line-height: 1.65; color: #fca5a5;
+}
+
+/* TABLE */
+.tbl-wrap { overflow-x: auto; margin-top: 1.2rem; border-radius: 12px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+thead { background: rgba(59,130,246,0.15); }
+thead th { padding: 0.85rem 1.1rem; text-align: left; font-weight: 700; color: var(--accent); font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; }
+tbody tr { border-top: 1px solid var(--border); }
+tbody tr:hover { background: rgba(255,255,255,0.03); }
+tbody td { padding: 0.85rem 1.1rem; color: #c8d8ea; line-height: 1.5; vertical-align: top; }
+tbody td strong { color: var(--white); }
+.td-accent { color: var(--accent); font-weight: 600; }
+.td-green { color: var(--green); font-weight: 600; }
+.td-gold { color: var(--gold); font-weight: 600; }
+.td-red { color: var(--red); font-weight: 600; }
+.td-purple { color: var(--purple); font-weight: 600; }
+
+/* COMPARE */
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
+@media(max-width:580px){ .compare { grid-template-columns: 1fr; } }
+.cmp-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.3rem; }
+.cmp-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.8rem; }
+.cmp-card ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+.cmp-card ul li { font-size: 0.88rem; line-height: 1.5; padding-left: 1.4rem; position: relative; color: var(--muted); }
+.cmp-card ul li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
+.cmp-blue { border-top: 3px solid var(--accent); }
+.cmp-blue h3 { color: var(--accent); }
+.cmp-purple { border-top: 3px solid var(--purple); }
+.cmp-purple h3 { color: var(--purple); }
+.cmp-green { border-top: 3px solid var(--green); }
+.cmp-green h3 { color: var(--green); }
+.cmp-gold { border-top: 3px solid var(--gold); }
+.cmp-gold h3 { color: var(--gold); }
+
+/* QUIZ */
+.quiz { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.6rem; margin-top: 1.2rem; }
+.quiz-q { font-size: 1rem; font-weight: 600; margin-bottom: 1.1rem; color: var(--white); line-height: 1.5; }
+.quiz-opts { display: flex; flex-direction: column; gap: 0.55rem; }
+.quiz-opt {
+  background: rgba(255,255,255,0.04); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 0.75rem 1.1rem; font-size: 0.92rem;
+  cursor: pointer; text-align: left; font-family: 'Outfit', sans-serif;
+  color: var(--text); transition: all 0.2s;
+}
+.quiz-opt:hover { border-color: var(--accent); background: rgba(59,130,246,0.08); }
+.quiz-opt.correct { border-color: var(--green); background: rgba(16,185,129,0.12); color: #9cf0d4; font-weight: 600; }
+.quiz-opt.wrong { border-color: var(--red); background: rgba(239,68,68,0.08); color: #fca5a5; }
+.quiz-fb { margin-top: 0.9rem; font-size: 0.88rem; line-height: 1.55; padding: 0.85rem 1.1rem; border-radius: 10px; display: none; }
+.quiz-fb.show { display: block; }
+.quiz-fb.ok { background: rgba(16,185,129,0.1); color: #9cf0d4; border-left: 3px solid var(--green); }
+.quiz-fb.no { background: rgba(239,68,68,0.08); color: #fca5a5; border-left: 3px solid var(--red); }
+
+/* FORMULA BOX */
+.formula-box {
+  background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.35);
+  border-radius: 12px; padding: 1.1rem 1.4rem; margin-top: 1rem;
+  font-family: 'Courier New', monospace; font-size: 1rem; color: #d4bbff;
+  line-height: 1.8;
+}
+.formula-box .f-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--purple); margin-bottom: 0.5rem;
+}
+.formula-box .f-desc { font-family: 'Outfit', sans-serif; font-size: 0.86rem; color: var(--muted); margin-top: 0.5rem; }
+
+/* TABS */
+.tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
+.tab {
+  font-size: 0.85rem; font-weight: 600; padding: 0.45rem 1.1rem;
+  border-radius: 30px; border: 1.5px solid var(--border); background: none;
+  color: var(--muted); cursor: pointer; transition: all 0.2s; font-family: 'Outfit', sans-serif;
+}
+.tab:hover, .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.tab-panel { display: none; animation: fadeUp 0.3s ease; }
+.tab-panel.active { display: block; }
+
+/* ACCORDION */
+.acc { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1.1rem; }
+.acc-item { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+.acc-hdr {
+  background: var(--card); border: none; width: 100%; text-align: left;
+  padding: 1rem 1.3rem; font-family: 'Outfit', sans-serif; font-size: 0.95rem;
+  font-weight: 700; cursor: pointer; display: flex; justify-content: space-between;
+  align-items: center; color: var(--white); transition: background 0.2s;
+}
+.acc-hdr:hover { background: rgba(255,255,255,0.05); }
+.acc-arrow { transition: transform 0.3s; }
+.acc-item.open .acc-arrow { transform: rotate(180deg); }
+.acc-body {
+  background: var(--card); border-top: 1px solid var(--border);
+  max-height: 0; overflow: hidden; transition: max-height 0.35s ease;
+  padding: 0 1.3rem;
+}
+.acc-item.open .acc-body { max-height: 500px; padding: 1rem 1.3rem 1.2rem; }
+.acc-body p { font-size: 0.9rem; line-height: 1.65; color: var(--muted); margin-bottom: 0.5rem; }
+.acc-body .ex { font-size: 0.87rem; color: var(--teal); font-style: italic; }
+
+/* NORMAL DIST VISUAL */
+.bell-wrap {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 1.5rem; margin-top: 1.2rem; text-align: center;
+}
+.bell-svg-area { width: 100%; max-width: 480px; margin: 0 auto; }
+.sd-labels { display: flex; justify-content: space-around; margin-top: 0.6rem; flex-wrap: wrap; gap: 0.4rem; }
+.sd-label {
+  font-size: 0.82rem; font-weight: 700; padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+}
+.sd-68 { background: rgba(59,130,246,0.2); color: var(--accent); }
+.sd-95 { background: rgba(139,92,246,0.2); color: var(--purple); }
+.sd-99 { background: rgba(16,185,129,0.2); color: var(--green); }
+
+/* SKEW VISUAL */
+.skew-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.2rem; justify-content: center; }
+.skew-box {
+  flex: 1; min-width: 160px; max-width: 220px; background: var(--card);
+  border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem;
+  text-align: center;
+}
+.skew-box h4 { font-size: 0.9rem; font-weight: 700; margin: 0.6rem 0 0.3rem; }
+.skew-box p { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+/* STAT BLOCKS */
+.stat-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.2rem; }
+.stat-block { flex: 1; min-width: 130px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem; text-align: center; }
+.stat-block .num { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 800; display: block; }
+.stat-block .lbl { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; line-height: 1.4; }
+
+/* TAG */
+.tag { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.65rem; border-radius: 20px; margin-left: 0.4rem; }
+.tag-blue { background: rgba(59,130,246,0.2); color: var(--accent); }
+.tag-green { background: rgba(16,185,129,0.2); color: var(--green); }
+.tag-gold { background: rgba(245,158,11,0.2); color: var(--gold); }
+.tag-red { background: rgba(239,68,68,0.2); color: var(--red); }
+
+/* TOOLTIP */
+[data-tip] { text-decoration: underline dotted rgba(59,130,246,0.5); cursor: help; position: relative; }
+[data-tip]:hover::after {
+  content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%); background: #243347; color: var(--text);
+  font-size: 0.78rem; line-height: 1.4; padding: 0.5rem 0.85rem;
+  border-radius: 8px; white-space: normal; max-width: 240px;
+  z-index: 200; pointer-events: none; border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+/* END SLIDE */
+.slide-end {
+  background: radial-gradient(ellipse at 30% 40%, rgba(59,130,246,0.15) 0%, transparent 55%),
+              radial-gradient(ellipse at 80% 70%, rgba(139,92,246,0.12) 0%, transparent 55%),
+              var(--bg);
+  text-align: center;
+}
+.topics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; margin-top: 2rem; max-width: 800px; width: 100%; }
+.topic-done { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; padding: 0.9rem; font-size: 0.87rem; font-weight: 600; color: #9cf0d4; }
+
+/* Util */
+.mt1 { margin-top: 0.6rem; }
+.mt2 { margin-top: 1.2rem; }
+.mt3 { margin-top: 2rem; }
+
+/* CORR SCALE VISUAL */
+.corr-scale { margin: 1.2rem 0; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.3rem; }
+.corr-bar { position: relative; height: 28px; border-radius: 14px; background: linear-gradient(90deg, #ef4444 0%, #f59e0b 25%, #6b7280 50%, #f59e0b 75%, #10b981 100%); margin: 0.5rem 0; }
+.corr-markers { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); margin-top: 0.3rem; }
+.corr-pointer { position: absolute; width: 3px; background: #fff; height: 100%; top: 0; border-radius: 2px; }
+.corr-legend { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem; }
+.corr-leg-item { font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; color: var(--muted); }
+.cl { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<div id="slides-container">
+
+<!-- ══ SLIDE 1 – COVER ══ -->
+<div class="slide slide-cover active" id="s1">
+  <div class="cover-tag">BUS819D · Part 2 · Sessions 2 – 3</div>
+  <h1 class="cover-title">Statistical <span>Analysis</span><br>& Testing</h1>
+  <p class="cover-sub">Descriptive methods, hypothesis testing, normal distribution, and inferential tests — all explained simply with examples.</p>
+  <div class="cover-pills">
+    <span class="pill">📊 Descriptive Methods</span>
+    <span class="pill">🧪 Hypothesis Testing</span>
+    <span class="pill">🔔 Normal Distribution</span>
+    <span class="pill">⚖️ t-tests & ANOVA</span>
+    <span class="pill">🔗 Correlation</span>
+    <span class="pill">📈 Regression</span>
+  </div>
+</div>
+
+<!-- ══ SLIDE 2 – 5 TYPES OF ANALYSIS ══ -->
+<div class="slide" id="s2">
+  <div class="inner">
+    <div class="label">Overview</div>
+    <h2 class="heading">5 Types of Statistical <em>Analysis</em> in Business</h2>
+    <p class="body-text">Every business research question calls for a different type of analysis. Here's the map:</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Type</th><th>Purpose</th><th>Example Question</th></tr></thead>
+        <tbody>
+          <tr><td class="td-accent">1</td><td><strong>Descriptive</strong></td><td>Summarise your data set</td><td>"What is the average revenue of firms in our sample?"</td></tr>
+          <tr><td class="td-purple">2</td><td><strong>Inferential</strong></td><td>Generalise from sample to population</td><td>"Is this pattern true for all Ghanaian firms, not just our sample?"</td></tr>
+          <tr><td class="td-gold">3</td><td><strong>Differences</strong></td><td>Compare means between groups</td><td>"Do male and female managers score differently on leadership?"</td></tr>
+          <tr><td class="td-green">4</td><td><strong>Associative</strong></td><td>Measure strength of relationships</td><td>"Is there a relationship between training hours and performance?"</td></tr>
+          <tr><td class="td-red">5</td><td><strong>Predictive</strong></td><td>Forecast future values</td><td>"Can we predict next quarter's sales from this quarter's data?"</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout mt2">📌 In this course we focus on types 1–4. Predictive analysis (regression) bridges types 4 and 5.</div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 3 – SECTION: DESCRIPTIVE ══ -->
+<div class="slide slide-section" data-num="01" id="s3">
+  <div class="sec-label">Session 2 · Part A</div>
+  <h2 class="sec-title">Descriptive <span>Statistics</span></h2>
+  <p class="sec-desc">The tools for summarising what your data actually looks like — before drawing any conclusions.</p>
+</div>
+
+<!-- ══ SLIDE 4 – TWO METHODS ══ -->
+<div class="slide" id="s4">
+  <div class="inner">
+    <div class="label">Descriptive Statistics</div>
+    <h2 class="heading">Two Ways to <em>Describe</em> Data</h2>
+    <p class="body-text">Once you have collected your data, you have two main approaches to describe it:</p>
+    <div class="compare">
+      <div class="cmp-card cmp-blue">
+        <h3>🔢 Numerical Method</h3>
+        <ul>
+          <li>More precise and objective</li>
+          <li>Compute averages (Mean, Median, Mode)</li>
+          <li>Compute variation (SD, Variance, Range)</li>
+          <li>Gives you exact numbers to compare</li>
+        </ul>
+      </div>
+      <div class="cmp-card cmp-purple">
+        <h3>📊 Graphical Method</h3>
+        <ul>
+          <li>Visualises the shape of the data</li>
+          <li>Frequency tables, bar charts, line graphs</li>
+          <li>Box plots, histograms</li>
+          <li>Helps identify patterns and outliers quickly</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout mt2">💡 In practice you use <strong>both</strong> together. Start with a graph to "see" the data, then use numbers to be precise about what you saw.</div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 5 – CENTRAL TENDENCY ══ -->
+<div class="slide" id="s5">
+  <div class="inner">
+    <div class="label">Numerical Method</div>
+    <h2 class="heading">Measures of <em>Central Tendency</em></h2>
+    <p class="body-text">These are the three types of "average" — they all try to describe the <strong>centre</strong> of your data, but they do it differently.</p>
+
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('ct','mean',this)">Mean</button>
+      <button class="tab" onclick="showTab('ct','median',this)">Median</button>
+      <button class="tab" onclick="showTab('ct','mode',this)">Mode</button>
+    </div>
+
+    <div id="ct-mean" class="tab-panel active">
+      <div class="cards">
+        <div class="card"><div class="card-icon">➕</div><h3>What it is</h3><p>Add all values together, then divide by how many values there are. The classic "average".</p></div>
+        <div class="card"><div class="card-icon">✅</div><h3>Best used when</h3><p>Data is on an interval or ratio scale with no extreme outliers.</p></div>
+        <div class="card"><div class="card-icon">⚠️</div><h3>Limitation</h3><p>One extreme value (outlier) can pull the mean up or down, giving a distorted picture.</p></div>
+      </div>
+      <div class="example mt2">
+        <div class="ex-label">💡 Example</div>
+        <p>5 employees earn: GHS 2,000 · 2,500 · 2,800 · 3,000 · <strong>20,000</strong><br>
+        Mean = (2000+2500+2800+3000+20000) ÷ 5 = <strong>GHS 6,060</strong> — but 4 out of 5 people earn far less! The one high salary distorted the mean. Here, median would be better.</p>
+      </div>
+      <div class="formula-box mt2">
+        <div class="f-label">Formula</div>
+        x̄ = (x₁ + x₂ + ... + xₙ) / n
+        <div class="f-desc">Where x̄ = mean, x = each value, n = total number of values</div>
+      </div>
+    </div>
+
+    <div id="ct-median" class="tab-panel">
+      <p class="body-text">The <strong>middle value</strong> when all scores are sorted in order. Half the data falls above it, half below. Great when you have extreme values.</p>
+      <div class="example">
+        <div class="ex-label">💡 Example</div>
+        <p>Scores in order: 40, 55, 62, <strong>68</strong>, 72, 85, 90 → Median = <strong>68</strong> (the 4th of 7 values)<br><br>
+        <strong>Even number of values:</strong> 40, 55, 62, 68, 72, 85 → Median = (62 + 68) ÷ 2 = <strong>65</strong></p>
+      </div>
+      <div class="callout mt2">📌 Going back to the salary example: 2000, 2500, 2800, 3000, 20000 → Median = <strong>GHS 2,800</strong>. This is far more representative of what most employees actually earn.</div>
+    </div>
+
+    <div id="ct-mode" class="tab-panel">
+      <p class="body-text">The value that <strong>appears most frequently</strong> in your data. The only average that works with nominal (category) data.</p>
+      <div class="example">
+        <div class="ex-label">💡 Example</div>
+        <p>Survey question: "Which phone brand do you use?" Responses: Samsung, iPhone, Samsung, Tecno, Samsung, iPhone, Tecno, Samsung → <strong>Mode = Samsung</strong> (appears 4 times). You can't calculate a mean or median from brand names — only the mode works.</p>
+      </div>
+      <div class="callout mt2">⚡ A <strong>bimodal</strong> distribution has two modes (two values appear equally often). A distribution with no repeating values has no mode.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 6 – WHEN TO USE WHICH AVERAGE ══ -->
+<div class="slide" id="s6">
+  <div class="inner">
+    <div class="label">Descriptive Statistics</div>
+    <h2 class="heading">Which Average Should <em>You Use?</em></h2>
+    <p class="body-text">The correct choice depends on your <strong>scale of measurement</strong> and whether outliers are present.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Measure</th><th>Scale Required</th><th>Use When…</th><th>Avoid When…</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong class="td-accent">Mean</strong></td>
+            <td>Interval or Ratio</td>
+            <td>Data is roughly symmetric; no extreme outliers</td>
+            <td>Data is skewed or has outliers — it will be misleading</td>
+          </tr>
+          <tr>
+            <td><strong class="td-purple">Median</strong></td>
+            <td>Ordinal, Interval, or Ratio</td>
+            <td>Data has extreme values or is ranked (e.g. income, house prices, Likert scales)</td>
+            <td>When you need to use the result in further calculations</td>
+          </tr>
+          <tr>
+            <td><strong class="td-gold">Mode</strong></td>
+            <td>Nominal (categorical)</td>
+            <td>Data is in categories — the "most common" answer matters (e.g. most popular product)</td>
+            <td>Continuous data — the mode may not be meaningful</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="example mt2">
+      <div class="ex-label">💡 Business Decision Tip</div>
+      <p>A clothing retailer wants to know the most popular shoe size to stock. <strong>Mode</strong> is the right answer — not mean (size 9.3?) or median. But to report average monthly revenue, use the <strong>Mean</strong> (if no extreme months) or <strong>Median</strong> (if one bumper month skews things).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 7 – MEASURES OF VARIATION ══ -->
+<div class="slide" id="s7">
+  <div class="inner">
+    <div class="label">Numerical Method</div>
+    <h2 class="heading">Measures of <em>Variation (Dispersion)</em></h2>
+    <p class="body-text">Two datasets can have the <strong>same average</strong> but look completely different. Variation tells you how <em>spread out</em> your data is from the centre.</p>
+    <div class="example">
+      <div class="ex-label">💡 Why It Matters</div>
+      <p>Team A scores: 50, 50, 50, 50 → Mean = 50, no variation<br>
+      Team B scores: 10, 30, 70, 90 → Mean = 50, <strong>huge variation</strong><br>
+      Same average, completely different performance. Variation reveals the full story.</p>
+    </div>
+    <div class="tbl-wrap mt2">
+      <table>
+        <thead><tr><th>Measure</th><th>Formula / Idea</th><th>Best For</th><th>Weakness</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong class="td-accent">Range</strong></td>
+            <td>Max − Min</td>
+            <td>Quick overview of the spread</td>
+            <td>Heavily affected by extreme values; ignores all middle data</td>
+          </tr>
+          <tr>
+            <td><strong class="td-green">Interquartile Range (IQR)</strong></td>
+            <td>Q3 − Q1 (middle 50% of data)</td>
+            <td>When outliers are present; used in box plots</td>
+            <td>Still ignores the top 25% and bottom 25%</td>
+          </tr>
+          <tr>
+            <td><strong class="td-purple">Variance</strong></td>
+            <td>Average of squared deviations from the mean</td>
+            <td>Foundation for standard deviation; used in many tests</td>
+            <td>Units are squared (e.g. GHS²) — hard to interpret directly</td>
+          </tr>
+          <tr>
+            <td><strong class="td-gold">Standard Deviation (SD)</strong></td>
+            <td>√Variance — back in original units</td>
+            <td>Most common; tells you the "typical" distance from the mean</td>
+            <td>Still affected by outliers (less than range, but still)</td>
+          </tr>
+          <tr>
+            <td><strong class="td-red">Coefficient of Variation (CV)</strong></td>
+            <td>(SD / Mean) × 100%</td>
+            <td>Comparing variation between datasets with different means/units</td>
+            <td>Meaningless when the mean is zero or near zero</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 8 – POPULATION VS SAMPLE FORMULAS ══ -->
+<div class="slide" id="s8">
+  <div class="inner">
+    <div class="label">Formulas</div>
+    <h2 class="heading">Population <em>vs</em> Sample Formulas</h2>
+    <p class="body-text">There are two versions of variance and standard deviation — one for when you have the <em>entire population</em>, one for when you only have a <em>sample</em>. In most business research, you'll use the <strong>sample versions</strong>.</p>
+    <div class="compare">
+      <div class="cmp-card cmp-blue">
+        <h3>🌍 Population (σ)</h3>
+        <ul>
+          <li>You have data on <strong>everyone</strong> in the group</li>
+          <li>Variance: σ² = Σ(x − μ)² / N</li>
+          <li>SD: σ = √σ²</li>
+          <li>CV: (σ / μ) × 100%</li>
+          <li>Denominator: N (total population)</li>
+        </ul>
+      </div>
+      <div class="cmp-card cmp-purple">
+        <h3>👥 Sample (s)</h3>
+        <ul>
+          <li>You have data on a <strong>subset</strong> of the group</li>
+          <li>Variance: s² = Σ(x − x̄)² / (n−1)</li>
+          <li>SD: s = √s²</li>
+          <li>CV: (s / x̄) × 100%</li>
+          <li>Denominator: n−1 (Bessel's correction)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout mt2">❓ <strong>Why n−1 for samples?</strong> Using n would underestimate the true spread. Subtracting 1 corrects for the fact that your sample doesn't capture all the variation in the population. This is called <strong>Bessel's correction</strong>.</div>
+    <div class="example mt2">
+      <div class="ex-label">💡 Worked Example (Sample SD)</div>
+      <p>Monthly profits (GHS 000s): 10, 14, 12, 18, 16 → Mean (x̄) = 14<br>
+      Deviations²: (10−14)²=16, (14−14)²=0, (12−14)²=4, (18−14)²=16, (16−14)²=4<br>
+      Variance s² = (16+0+4+16+4) / (5−1) = 40/4 = <strong>10</strong><br>
+      Standard Deviation s = √10 ≈ <strong>GHS 3,162</strong> — typical profit varies by about GHS 3,162 from the mean.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 9 – QUIZ 1 ══ -->
+<div class="slide" id="s9">
+  <div class="inner">
+    <div class="label">Quick Check ✏️</div>
+    <h2 class="heading">Descriptive Stats <em>Review</em></h2>
+
+    <div class="quiz">
+      <div class="quiz-q">Q1: A researcher reports that the "average" salary at a company is GHS 4,200, but one executive earns GHS 80,000 while most staff earn under GHS 3,000. Which measure was probably used, and which would be better?</div>
+      <div class="quiz-opts" id="qA">
+        <button class="quiz-opt" onclick="chk(this,'qA',false,'fbA')">Mode was used — median would be better</button>
+        <button class="quiz-opt" onclick="chk(this,'qA',true,'fbA')">Mean was used — median would be better because of the outlier (GHS 80,000)</button>
+        <button class="quiz-opt" onclick="chk(this,'qA',false,'fbA')">Median was used — mean would be better to include all values</button>
+      </div>
+      <div class="quiz-fb" id="fbA"></div>
+    </div>
+
+    <div class="quiz mt2">
+      <div class="quiz-q">Q2: Two companies have the same average monthly sales of GHS 50,000. Company A has a standard deviation of GHS 2,000. Company B has a standard deviation of GHS 18,000. What does this tell you?</div>
+      <div class="quiz-opts" id="qB">
+        <button class="quiz-opt" onclick="chk(this,'qB',false,'fbB')">Both companies are equally stable — same mean means same performance</button>
+        <button class="quiz-opt" onclick="chk(this,'qB',true,'fbB')">Company A is more consistent and stable; Company B's sales fluctuate wildly each month</button>
+        <button class="quiz-opt" onclick="chk(this,'qB',false,'fbB')">Company B is better because its sales range is wider</button>
+      </div>
+      <div class="quiz-fb" id="fbB"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 10 – SECTION: HYPOTHESIS ══ -->
+<div class="slide slide-section" data-num="02" id="s10">
+  <div class="sec-label">Session 2 · Part B</div>
+  <h2 class="sec-title">Hypothesis <span>Testing</span></h2>
+  <p class="sec-desc">How to formally test whether your research claim is supported by the data.</p>
+</div>
+
+<!-- ══ SLIDE 11 – WHAT IS A HYPOTHESIS ══ -->
+<div class="slide" id="s11">
+  <div class="inner">
+    <div class="label">Hypothesis Testing</div>
+    <h2 class="heading">What is a <em>Hypothesis?</em></h2>
+    <p class="body-text">A hypothesis is a <strong>testable statement</strong> that explains a relationship or difference. The key word is <em>testable</em> — you must be able to collect data and check whether the statement holds.</p>
+    <div class="compare">
+      <div class="cmp-card cmp-gold">
+        <h3>❌ NOT a Good Hypothesis</h3>
+        <ul>
+          <li>"Empowerment programmes <em>may</em> enhance performance" (too vague — how will you test "may"?)</li>
+          <li>"People <em>tend to</em> prefer quality" (no specific measurable prediction)</li>
+          <li>"Companies <em>might</em> benefit from training"</li>
+        </ul>
+      </div>
+      <div class="cmp-card cmp-green">
+        <h3>✅ A Good Hypothesis</h3>
+        <ul>
+          <li>States 2+ measurable variables</li>
+          <li>States an IV and a DV</li>
+          <li>States a clear relationship or difference</li>
+          <li>"Good internal control <strong>significantly enhances</strong> corporate performance"</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tbl-wrap mt2">
+      <table>
+        <thead><tr><th>Type</th><th>Symbol</th><th>Says…</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong class="td-accent">Null Hypothesis</strong></td>
+            <td class="td-muted">H₀</td>
+            <td>"Nothing is happening" — no difference, no relationship</td>
+            <td>H₀: There is <strong>no</strong> difference in performance between trained and untrained staff</td>
+          </tr>
+          <tr>
+            <td><strong class="td-green">Alternative Hypothesis</strong></td>
+            <td class="td-muted">H₁</td>
+            <td>"Something is happening" — there IS a difference or relationship</td>
+            <td>H₁: Trained staff <strong>significantly outperform</strong> untrained staff</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout mt2">🔑 You <strong>never prove H₁ directly</strong>. Instead, you try to disprove H₀. If the data strongly contradicts H₀, you <strong>reject H₀</strong> and accept H₁.</div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 12 – STEPS IN HYPOTHESIS TESTING ══ -->
+<div class="slide" id="s12">
+  <div class="inner">
+    <div class="label">Hypothesis Testing</div>
+    <h2 class="heading">5 Steps in <em>Hypothesis Testing</em></h2>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Step</th><th>What You Do</th><th>Plain English</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="td-accent"><strong>1</strong></td>
+            <td><strong>State H₀ and H₁</strong></td>
+            <td>Write your "nothing is happening" statement (H₀) and your "something is happening" prediction (H₁)</td>
+          </tr>
+          <tr>
+            <td class="td-accent"><strong>2</strong></td>
+            <td><strong>Choose test & significance level</strong></td>
+            <td>Pick the right statistical test (t-test, ANOVA, etc.) and set your threshold — usually α = 0.05 (5%)</td>
+          </tr>
+          <tr>
+            <td class="td-accent"><strong>3</strong></td>
+            <td><strong>State the decision rule</strong></td>
+            <td>Define when you'll reject H₀ — e.g., "I'll reject H₀ if p-value &lt; 0.05"</td>
+          </tr>
+          <tr>
+            <td class="td-accent"><strong>4</strong></td>
+            <td><strong>Compute test statistic & p-value</strong></td>
+            <td>Run the calculation (usually using SPSS). Get the p-value.</td>
+          </tr>
+          <tr>
+            <td class="td-accent"><strong>5</strong></td>
+            <td><strong>Interpret and conclude</strong></td>
+            <td>If p &lt; 0.05 → Reject H₀ (significant result). If p ≥ 0.05 → Fail to reject H₀.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="example mt2">
+      <div class="ex-label">💡 What Does p-value Mean?</div>
+      <p>The <strong>p-value</strong> is the probability of seeing your results <em>by random chance</em> if H₀ were actually true.<br>
+      p = 0.03 means: "There's only a 3% chance these results happened by luck." → Reject H₀ (it's unlikely to be coincidence).<br>
+      p = 0.40 means: "There's a 40% chance these results happened by luck." → Do NOT reject H₀.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 13 – TYPE I & II ERRORS ══ -->
+<div class="slide" id="s13">
+  <div class="inner">
+    <div class="label">Hypothesis Testing</div>
+    <h2 class="heading">Type I & Type II <em>Errors</em></h2>
+    <p class="body-text">Even when you do everything right, there's always a <strong>chance you could be wrong</strong>. Statistics gives names to the two types of mistakes you can make.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th></th><th>H₀ is actually TRUE</th><th>H₀ is actually FALSE</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>You REJECT H₀</strong></td>
+            <td style="background:rgba(239,68,68,0.12)"><span class="td-red">❌ Type I Error (False Positive)</span><br><small style="color:var(--muted)">You said something is happening when it actually isn't</small></td>
+            <td style="background:rgba(16,185,129,0.1)"><span class="td-green">✅ Correct Decision</span><br><small style="color:var(--muted)">You correctly identified a real effect</small></td>
+          </tr>
+          <tr>
+            <td><strong>You FAIL to reject H₀</strong></td>
+            <td style="background:rgba(16,185,129,0.1)"><span class="td-green">✅ Correct Decision</span><br><small style="color:var(--muted)">H₀ was true and you kept it</small></td>
+            <td style="background:rgba(245,158,11,0.1)"><span class="td-gold">⚠️ Type II Error (False Negative)</span><br><small style="color:var(--muted)">You missed a real effect — said nothing's happening when it is</small></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="compare mt2">
+      <div class="cmp-card cmp-blue">
+        <h3>🚨 Type I Error (α)</h3>
+        <ul>
+          <li>False alarm — seeing an effect that isn't there</li>
+          <li>Controlled by setting α = 0.05</li>
+          <li>Example: Concluding a new drug works when it doesn't</li>
+          <li>More dangerous in medicine, less so in marketing</li>
+        </ul>
+      </div>
+      <div class="cmp-card cmp-gold">
+        <h3>👻 Type II Error (β)</h3>
+        <ul>
+          <li>Missing a real effect — it exists but you didn't find it</li>
+          <li>Often happens with too-small sample sizes</li>
+          <li>Example: Concluding a drug has no effect when it actually helps</li>
+          <li>Reduce by increasing sample size</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 14 – ONE-TAIL VS TWO-TAIL ══ -->
+<div class="slide" id="s14">
+  <div class="inner">
+    <div class="label">Hypothesis Testing</div>
+    <h2 class="heading">One-Tailed vs <em>Two-Tailed</em> Tests</h2>
+    <p class="body-text">Before running a test, you need to know if your prediction has a <em>direction</em> or not.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Test Type</th><th>H₁ Form</th><th>When to Use</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong class="td-accent">Two-Tailed</strong></td>
+            <td>H₁: μ₁ ≠ μ₂<br><small>(just "different")</small></td>
+            <td>You predict a difference exists, but you don't know which group will be higher</td>
+            <td>"Male and female managers score <strong>differently</strong> on communication (but unsure who scores higher)"</td>
+          </tr>
+          <tr>
+            <td><strong class="td-gold">One-Tailed (Right)</strong></td>
+            <td>H₁: μ₁ &gt; μ₂</td>
+            <td>You predict Group 1 will be <strong>higher/more</strong> than Group 2</td>
+            <td>"Male managers score <strong>higher</strong> than female managers on risk-taking"</td>
+          </tr>
+          <tr>
+            <td><strong class="td-purple">One-Tailed (Left)</strong></td>
+            <td>H₁: μ₁ &lt; μ₂</td>
+            <td>You predict Group 1 will be <strong>lower/less</strong> than Group 2</td>
+            <td>"Untrained staff score <strong>lower</strong> than trained staff on performance"</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout mt2">📌 <strong>Practical rule:</strong> If theory or previous studies give you a clear direction, use a one-tailed test. If you're unsure about direction, use two-tailed (it's more conservative and widely accepted in business research).</div>
+    <div class="example mt2">
+      <div class="ex-label">💡 Analogy</div>
+      <p>Imagine betting on a football match.<br>
+      <strong>Two-tailed</strong>: "I bet the score won't be a draw" (either team could win).<br>
+      <strong>One-tailed</strong>: "I bet Team A will win" (specific direction).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 15 – SECTION: NORMAL DIST ══ -->
+<div class="slide slide-section" data-num="03" id="s15">
+  <div class="sec-label">Session 2 · Part C</div>
+  <h2 class="sec-title">Normal <span>Distribution</span></h2>
+  <p class="sec-desc">The most important concept in inferential statistics — and the foundation of most statistical tests.</p>
+</div>
+
+<!-- ══ SLIDE 16 – NORMAL DISTRIBUTION ══ -->
+<div class="slide" id="s16">
+  <div class="inner">
+    <div class="label">Normal Distribution</div>
+    <h2 class="heading">The <em>Bell Curve</em> Explained</h2>
+    <p class="body-text">A normal distribution is when data naturally clusters around a central value and <strong>spreads out symmetrically</strong> in both directions — creating a bell shape. Most measurements in nature and business follow this pattern.</p>
+
+    <div class="bell-wrap">
+      <div class="bell-svg-area">
+        <svg viewBox="0 0 480 200" xmlns="http://www.w3.org/2000/svg" width="100%">
+          <defs>
+            <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.3"/>
+              <stop offset="16%" style="stop-color:#8b5cf6;stop-opacity:0.35"/>
+              <stop offset="34%" style="stop-color:#3b82f6;stop-opacity:0.5"/>
+              <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:0.6"/>
+              <stop offset="66%" style="stop-color:#3b82f6;stop-opacity:0.5"/>
+              <stop offset="84%" style="stop-color:#8b5cf6;stop-opacity:0.35"/>
+              <stop offset="100%" style="stop-color:#10b981;stop-opacity:0.3"/>
+            </linearGradient>
+          </defs>
+          <!-- Bell curve fill -->
+          <path d="M20,185 C60,185 80,100 100,60 C120,25 140,10 160,6 C180,3 200,2 240,2 C280,2 300,3 320,6 C340,10 360,25 380,60 C400,100 420,185 460,185 Z" fill="url(#bg1)" opacity="0.7"/>
+          <!-- Bell curve line -->
+          <path d="M20,185 C60,185 80,100 100,60 C120,25 140,10 160,6 C180,3 200,2 240,2 C280,2 300,3 320,6 C340,10 360,25 380,60 C400,100 420,185 460,185" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
+          <!-- Mean line -->
+          <line x1="240" y1="2" x2="240" y2="185" stroke="white" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>
+          <!-- SD markers -->
+          <line x1="170" y1="6" x2="170" y2="185" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+          <line x1="310" y1="6" x2="310" y2="185" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+          <line x1="100" y1="60" x2="100" y2="185" stroke="#10b981" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+          <line x1="380" y1="60" x2="380" y2="185" stroke="#10b981" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+          <!-- Labels -->
+          <text x="240" y="196" text-anchor="middle" fill="white" font-size="11" font-family="Outfit">μ (Mean)</text>
+          <text x="170" y="196" text-anchor="middle" fill="#8b5cf6" font-size="10" font-family="Outfit">−1σ</text>
+          <text x="310" y="196" text-anchor="middle" fill="#8b5cf6" font-size="10" font-family="Outfit">+1σ</text>
+          <text x="100" y="196" text-anchor="middle" fill="#10b981" font-size="10" font-family="Outfit">−2σ</text>
+          <text x="380" y="196" text-anchor="middle" fill="#10b981" font-size="10" font-family="Outfit">+2σ</text>
+          <!-- Brace labels -->
+          <text x="240" y="120" text-anchor="middle" fill="white" font-size="12" font-family="Outfit" font-weight="700">68%</text>
+          <text x="240" y="150" text-anchor="middle" fill="#c4b5fd" font-size="10" font-family="Outfit">95%</text>
+          <text x="240" y="168" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="Outfit">99.7%</text>
+        </svg>
+      </div>
+      <div class="sd-labels">
+        <span class="sd-label sd-68">±1σ covers 68% of data</span>
+        <span class="sd-label sd-95">±2σ covers 95% of data</span>
+        <span class="sd-label sd-99">±3σ covers 99.7% of data</span>
+      </div>
+    </div>
+
+    <div class="tbl-wrap mt2">
+      <table>
+        <thead><tr><th>Property</th><th>What It Means</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Symmetric</strong></td><td>Left half is a mirror image of the right half — no skew</td></tr>
+          <tr><td><strong>Mean = Median = Mode</strong></td><td>All three averages are the same value — all sit at the centre</td></tr>
+          <tr><td><strong>Total area = 100%</strong></td><td>100% of all possible values fall somewhere under the curve</td></tr>
+          <tr><td><strong>Never touches x-axis</strong></td><td>The tails get very close to zero but theoretically never reach it</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 17 – NORMALITY TESTING ══ -->
+<div class="slide" id="s17">
+  <div class="inner">
+    <div class="label">Normal Distribution</div>
+    <h2 class="heading">Testing for <em>Normality</em></h2>
+    <p class="body-text">Before running most inferential tests, you need to check: <strong>is your data normally distributed?</strong> You can do this graphically or statistically.</p>
+
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('nm','graph',this)">Graphical Methods</button>
+      <button class="tab" onclick="showTab('nm','stat',this)">Statistical Tests</button>
+      <button class="tab" onclick="showTab('nm','skew',this)">Skewness & Kurtosis</button>
+    </div>
+
+    <div id="nm-graph" class="tab-panel active">
+      <div class="cards">
+        <div class="card"><div class="card-icon">📊</div><h3>Histogram</h3><p>Plot your data as a bar chart. If it looks like a bell — it's normal. If it leans left or right, it's skewed.</p></div>
+        <div class="card"><div class="card-icon">📦</div><h3>Box & Whisker Plot</h3><p>Shows median, quartiles and extremes. A symmetric box with equal whiskers suggests normality.</p></div>
+        <div class="card"><div class="card-icon">📉</div><h3>Normal Q-Q Plot</h3><p>Plots your data against a theoretical normal distribution. If points follow a straight 45° diagonal line → your data is normal.</p></div>
+      </div>
+    </div>
+
+    <div id="nm-stat" class="tab-panel">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Test</th><th>Use When</th><th>Decision Rule</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong class="td-accent">Kolmogorov-Smirnov (K-S)</strong></td>
+              <td>Large samples (n ≥ 50)</td>
+              <td>If p &lt; 0.05 → <span class="td-red">NOT normal</span><br>If p ≥ 0.05 → <span class="td-green">Normal</span></td>
+            </tr>
+            <tr>
+              <td><strong class="td-purple">Shapiro-Wilk</strong></td>
+              <td>Small samples (n &lt; 50)</td>
+              <td>If p &lt; 0.05 → <span class="td-red">NOT normal</span><br>If p ≥ 0.05 → <span class="td-green">Normal</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout mt2">💡 Both tests use the <strong>same hypothesis</strong>:<br>H₀: Data is NOT significantly different from a normal distribution (i.e., it IS normal)<br>H₁: Data IS significantly different from normal (i.e., NOT normal)<br>A high p-value (≥ 0.05) is what you WANT — it means your data is normal.</div>
+    </div>
+
+    <div id="nm-skew" class="tab-panel">
+      <p class="body-text">Skewness and kurtosis are numbers that describe the <em>shape</em> of your distribution. SPSS reports these automatically.</p>
+      <div class="skew-row">
+        <div class="skew-box">
+          <svg viewBox="0 0 100 60" width="100"><path d="M5,55 C10,55 15,40 20,20 C25,5 35,2 40,2 C50,2 70,30 95,55" fill="rgba(59,130,246,0.2)" stroke="#3b82f6" stroke-width="1.5" fill-rule="evenodd"/><line x1="5" y1="55" x2="95" y2="55" stroke="#3b82f6" stroke-width="1" opacity="0.4"/></svg>
+          <h4 style="color:var(--accent)">Normal</h4>
+          <p>Skewness ≈ 0<br>Kurtosis ≈ 0</p>
+        </div>
+        <div class="skew-box">
+          <svg viewBox="0 0 100 60" width="100"><path d="M5,55 C30,55 40,30 50,10 C60,2 65,2 75,10 C85,20 90,40 95,55" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="1.5"/><line x1="5" y1="55" x2="95" y2="55" stroke="#f59e0b" stroke-width="1" opacity="0.4"/></svg>
+          <h4 style="color:var(--gold)">Right-Skewed (+)</h4>
+          <p>Long tail to the right<br>Skewness &gt; 0</p>
+        </div>
+        <div class="skew-box">
+          <svg viewBox="0 0 100 60" width="100"><path d="M5,55 C10,40 15,20 25,10 C35,2 40,2 50,10 C60,30 70,55 95,55" fill="rgba(139,92,246,0.2)" stroke="#8b5cf6" stroke-width="1.5"/><line x1="5" y1="55" x2="95" y2="55" stroke="#8b5cf6" stroke-width="1" opacity="0.4"/></svg>
+          <h4 style="color:var(--purple)">Left-Skewed (−)</h4>
+          <p>Long tail to the left<br>Skewness &lt; 0</p>
+        </div>
+        <div class="skew-box">
+          <svg viewBox="0 0 100 60" width="100"><path d="M5,55 C20,55 30,50 40,30 C45,15 50,2 55,15 C60,30 70,50 80,55 C85,55 90,55 95,55" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5"/></svg>
+          <h4 style="color:var(--green)">Kurtosis Types</h4>
+          <p>K&gt;0: Leptokurtic (peaked)<br>K=0: Mesokurtic (normal)<br>K&lt;0: Platykurtic (flat)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 18 – NOT NORMAL? ══ -->
+<div class="slide" id="s18">
+  <div class="inner">
+    <div class="label">Normal Distribution</div>
+    <h2 class="heading">What if Your Data is <em>NOT Normal?</em></h2>
+    <p class="body-text">If your normality test fails (p &lt; 0.05), you have two options:</p>
+    <div class="compare">
+      <div class="cmp-card cmp-blue">
+        <h3>🔄 Option 1: Transform the Data</h3>
+        <ul>
+          <li>Change the mathematical form to reduce the skew</li>
+          <li><strong>Positive skew:</strong> try Log(x), 1/x, or √x</li>
+          <li><strong>Negative skew:</strong> try squaring (x²) or cubing (x³)</li>
+          <li>Then re-test for normality</li>
+        </ul>
+      </div>
+      <div class="cmp-card cmp-purple">
+        <h3>🔃 Option 2: Use Non-Parametric Tests</h3>
+        <ul>
+          <li>Non-parametric tests don't assume normality</li>
+          <li>Work with ordinal or categorical data too</li>
+          <li>Usually less powerful than parametric tests</li>
+          <li>Also preferred when n &lt; 30</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tbl-wrap mt2">
+      <table>
+        <thead><tr><th>If you'd normally use…</th><th>And data is NOT normal, use…</th></tr></thead>
+        <tbody>
+          <tr><td>Independent t-test</td><td>Mann-Whitney U test</td></tr>
+          <tr><td>Paired t-test</td><td>Wilcoxon Signed Rank test</td></tr>
+          <tr><td>One-way ANOVA</td><td>Kruskal-Wallis test</td></tr>
+          <tr><td>Repeated Measures ANOVA</td><td>Friedman test</td></tr>
+          <tr><td>Pearson correlation</td><td>Spearman rank correlation</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 19 – SECTION: INFERENTIAL ══ -->
+<div class="slide slide-section" data-num="04" id="s19">
+  <div class="sec-label">Session 3</div>
+  <h2 class="sec-title">Inferential <span>Statistics</span></h2>
+  <p class="sec-desc">Parametric and non-parametric tests — which to use and when.</p>
+</div>
+
+<!-- ══ SLIDE 20 – PARAMETRIC VS NON-PARAMETRIC ══ -->
+<div class="slide" id="s20">
+  <div class="inner">
+    <div class="label">Inferential Statistics</div>
+    <h2 class="heading">Parametric vs <em>Non-Parametric</em> Tests</h2>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Feature</th><th>Parametric</th><th>Non-Parametric</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Assumption</strong></td><td>Data must be normally distributed</td><td>No normality assumption needed</td></tr>
+          <tr><td><strong>Scale</strong></td><td>Interval or Ratio only</td><td>Nominal, Ordinal, Interval, or Ratio</td></tr>
+          <tr><td><strong>Sample size</strong></td><td>Larger preferred (n ≥ 30)</td><td>Works with small samples (n &lt; 30)</td></tr>
+          <tr><td><strong>Power</strong></td><td>More powerful — detects effects better</td><td>Less powerful</td></tr>
+          <tr><td><strong>Examples</strong></td><td>t-test, ANOVA, Pearson r, Regression</td><td>Mann-Whitney, Wilcoxon, Kruskal-Wallis, Spearman</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout mt2">📌 <strong>General rule:</strong> Always prefer parametric tests when assumptions are met — they are more sensitive. Use non-parametric as the fallback.</div>
+    <div class="tbl-wrap mt2">
+      <table>
+        <thead><tr><th>Measurement Scale of DV</th><th>2 Independent Groups</th><th>2 Dependent Groups</th><th>3+ Independent Groups</th><th>3+ Dependent Groups</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong class="td-accent">Interval / Ratio</strong></td>
+            <td>Independent t-test</td>
+            <td>Paired t-test</td>
+            <td>One-Way ANOVA</td>
+            <td>Repeated Measures ANOVA</td>
+          </tr>
+          <tr>
+            <td><strong class="td-gold">Ordinal</strong></td>
+            <td>Mann-Whitney U</td>
+            <td>Wilcoxon</td>
+            <td>Kruskal-Wallis</td>
+            <td>Friedman</td>
+          </tr>
+          <tr>
+            <td><strong class="td-purple">Nominal</strong></td>
+            <td>Chi-Square</td>
+            <td>Chi-Square</td>
+            <td>Chi-Square</td>
+            <td>Chi-Square</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 21 – T-TESTS ══ -->
+<div class="slide" id="s21">
+  <div class="inner">
+    <div class="label">Parametric Tests</div>
+    <h2 class="heading">The <em>t-Test</em> Family</h2>
+    <p class="body-text">t-tests compare <strong>means</strong> when the population variance is unknown (which is almost always in business research). There are 3 types:</p>
+
+    <div class="acc" id="ttests">
+      <div class="acc-item" id="t1">
+        <button class="acc-hdr" onclick="toggleAcc('t1')">
+          🔬 One-Sample t-Test <span class="tag tag-blue">1 group</span>
+          <span class="acc-arrow">▼</span>
+        </button>
+        <div class="acc-body">
+          <p><strong>Question it answers:</strong> Does my sample's mean significantly differ from a known benchmark value?</p>
+          <p class="ex">📌 Example: A company claims its delivery takes an average of 3 days. You sample 40 deliveries and get a mean of 3.8 days. Is the true mean really 3 days or has it increased?<br>H₀: μ = 3 days | H₁: μ ≠ 3 days → Run one-sample t-test</p>
+          <p><strong>Assumptions:</strong> Continuous scale (interval/ratio) · Normality · Random sample</p>
+        </div>
+      </div>
+
+      <div class="acc-item" id="t2">
+        <button class="acc-hdr" onclick="toggleAcc('t2')">
+          ⚖️ Independent Samples t-Test <span class="tag tag-green">2 unrelated groups</span>
+          <span class="acc-arrow">▼</span>
+        </button>
+        <div class="acc-body">
+          <p><strong>Question it answers:</strong> Are the means of two <em>different, unrelated</em> groups significantly different?</p>
+          <p class="ex">📌 Example: Do male entrepreneurs and female entrepreneurs have different average monthly revenues? You survey 50 males and 50 females (different people). H₀: μ_male = μ_female | H₁: μ_male ≠ μ_female</p>
+          <p><strong>Formula idea:</strong> t = (Mean₁ − Mean₂) / Standard Error of the difference</p>
+          <p><strong>Assumptions:</strong> Continuous scale · Normality · Homogeneity of variance · Two separate categorical groups · Random sampling</p>
+        </div>
+      </div>
+
+      <div class="acc-item" id="t3">
+        <button class="acc-hdr" onclick="toggleAcc('t3')">
+          🔁 Paired Sample t-Test (Dependent) <span class="tag tag-gold">same group, 2 conditions</span>
+          <span class="acc-arrow">▼</span>
+        </button>
+        <div class="acc-body">
+          <p><strong>Question it answers:</strong> Did the mean change significantly for the <em>same group</em> measured at two different times or under two conditions?</p>
+          <p class="ex">📌 Example: You measure the productivity of 30 employees <em>before</em> training and <em>after</em> training. Same 30 people, two scores. H₀: No difference between pre- and post-training scores | H₁: Post-training scores are higher</p>
+          <p><strong>Also called:</strong> Repeated measures t-test, before-after test, husband-wife studies</p>
+          <p><strong>Assumptions:</strong> Continuous scale · Normality · Related pairs · Homogeneity of variance</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tbl-wrap mt2">
+      <table>
+        <thead><tr><th>t-Test Type</th><th>Groups</th><th>Key Question</th><th>Developed By</th></tr></thead>
+        <tbody>
+          <tr><td>One-Sample</td><td>1 group vs benchmark</td><td>"Does my sample differ from a known value?"</td><td rowspan="3">W.S. Gossett (1908) — published under pen name "Student" — hence "Student's t-test"</td></tr>
+          <tr><td>Independent</td><td>2 different groups</td><td>"Are these two groups different from each other?"</td></tr>
+          <tr><td>Paired</td><td>Same group, 2 times/conditions</td><td>"Did this group change between the two measurements?"</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 22 – ANOVA ══ -->
+<div class="slide" id="s22">
+  <div class="inner">
+    <div class="label">Parametric Tests</div>
+    <h2 class="heading">One-Way <em>ANOVA</em></h2>
+    <p class="body-text"><strong>ANOVA = Analysis of Variance.</strong> When you want to compare means across <em>more than two groups</em>, a t-test isn't enough — you use ANOVA.</p>
+
+    <div class="example">
+      <div class="ex-label">💡 Why Not Just Do Multiple t-Tests?</div>
+      <p>If you have 3 groups and run 3 separate t-tests, each at 5% error risk, your <strong>total error probability multiplies up</strong>. ANOVA tests all groups <em>simultaneously</em> in one test, keeping the error at 5%.</p>
+    </div>
+
+    <div class="cards mt2">
+      <div class="card"><div class="card-icon">🎯</div><h3>Purpose</h3><p>Test if at least one group mean is significantly different from the others — with ONE test for ALL groups.</p></div>
+      <div class="card"><div class="card-icon">1️⃣</div><h3>One-Way</h3><p>One independent variable (called a "factor") with 3 or more levels/groups. E.g. Region: North, South, Central.</p></div>
+      <div class="card"><div class="card-icon">📊</div><h3>How it works</h3><p>Compares variance <em>between</em> groups to variance <em>within</em> groups. A large F-ratio → significant differences exist.</p></div>
+    </div>
+
+    <div class="example mt2">
+      <div class="ex-label">📌 Business Example</div>
+      <p>You want to know if employee performance differs across 4 departments: Finance, Marketing, HR, and Operations. You have 20 employees per department.<br>
+      H₀: μ_Finance = μ_Marketing = μ_HR = μ_Operations (all means are equal)<br>
+      H₁: At least one department mean is different<br>
+      If ANOVA gives p &lt; 0.05 → Reject H₀ → At least one department performs differently.</p>
+    </div>
+
+    <div class="callout mt2">⚠️ <strong>Important:</strong> ANOVA tells you that differences exist — it does NOT tell you <em>which groups</em> are different. You need a <strong>Post-hoc test</strong> (like Tukey's HSD or Bonferroni) to find exactly which pairs differ.</div>
+
+    <div class="tbl-wrap mt2">
+      <table>
+        <thead><tr><th>Assumption</th><th>Plain English</th></tr></thead>
+        <tbody>
+          <tr><td>Continuous scale</td><td>DV must be interval or ratio level</td></tr>
+          <tr><td>Normality</td><td>Data in each group should be normally distributed</td></tr>
+          <tr><td>Homogeneity of Variance</td><td>The spread (variance) in each group should be roughly equal — tested with Levene's test</td></tr>
+          <tr><td>Independence</td><td>More than 2 independent categorical groups</td></tr>
+          <tr><td>Random Sampling</td><td>Subjects were randomly selected</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 23 – SECTION: CORRELATION ══ -->
+<div class="slide slide-section" data-num="05" id="s23">
+  <div class="sec-label">Session 3 · Part B</div>
+  <h2 class="sec-title">Correlation <span>Analysis</span></h2>
+  <p class="sec-desc">Measuring the strength and direction of relationships between variables.</p>
+</div>
+
+<!-- ══ SLIDE 24 – CORRELATION ══ -->
+<div class="slide" id="s24">
+  <div class="inner">
+    <div class="label">Correlation Analysis</div>
+    <h2 class="heading">Understanding <em>Correlation</em></h2>
+    <p class="body-text">Correlation measures <strong>how strongly two variables are related</strong> and whether the relationship is positive or negative. It does NOT tell you that one causes the other.</p>
+
+    <div class="corr-scale">
+      <div class="ex-label" style="color:var(--accent);margin-bottom:0.5rem">CORRELATION COEFFICIENT (r) SCALE</div>
+      <div class="corr-bar">
+        <div class="corr-pointer" style="left:0%"></div>
+        <div class="corr-pointer" style="left:50%"></div>
+        <div class="corr-pointer" style="left:100%"></div>
+      </div>
+      <div class="corr-markers">
+        <span style="color:#ef4444">−1.0<br>Perfect Negative</span>
+        <span style="color:#f59e0b">−0.5<br>Moderate Negative</span>
+        <span style="color:#94a3b8">0<br>No Relationship</span>
+        <span style="color:#f59e0b">+0.5<br>Moderate Positive</span>
+        <span style="color:#10b981">+1.0<br>Perfect Positive</span>
+      </div>
+      <div class="corr-legend">
+        <div class="corr-leg-item"><div class="cl" style="background:#10b981"></div>Positive: both variables move in the same direction</div>
+        <div class="corr-leg-item"><div class="cl" style="background:#ef4444"></div>Negative: as one goes up, the other goes down</div>
+        <div class="corr-leg-item"><div class="cl" style="background:#94a3b8"></div>Zero: no linear relationship at all</div>
+      </div>
+    </div>
+
+    <div class="tbl-wrap mt2">
+      <table>
+        <thead><tr><th>r value</th><th>Strength</th><th>Business Example</th></tr></thead>
+        <tbody>
+          <tr><td><strong class="td-green">+0.90 to +1.00</strong></td><td>Very Strong Positive</td><td>More hours worked → significantly more output produced</td></tr>
+          <tr><td><strong class="td-green">+0.50 to +0.89</strong></td><td>Moderate to Strong Positive</td><td>Higher training investment → better employee performance</td></tr>
+          <tr><td><strong class="td-muted">−0.10 to +0.10</strong></td><td>Negligible / No relationship</td><td>Employee shoe size and productivity (no link)</td></tr>
+          <tr><td><strong class="td-red">−0.50 to −0.89</strong></td><td>Moderate to Strong Negative</td><td>Higher employee stress → lower customer satisfaction scores</td></tr>
+          <tr><td><strong class="td-red">−0.90 to −1.00</strong></td><td>Very Strong Negative</td><td>Higher product defect rate → sharply lower sales</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout-red mt2">⚠️ <strong>Correlation ≠ Causation.</strong> Ice cream sales and drowning rates are positively correlated — both rise in summer. That doesn't mean ice cream causes drowning! Always think about <em>why</em> the correlation might exist.</div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 25 – PEARSON VS SPEARMAN ══ -->
+<div class="slide" id="s25">
+  <div class="inner">
+    <div class="label">Correlation Analysis</div>
+    <h2 class="heading">Pearson vs <em>Spearman</em> Correlation</h2>
+    <p class="body-text">There are two main correlation tests. Your choice depends on your data's scale and whether it's normally distributed.</p>
+    <div class="compare">
+      <div class="cmp-card cmp-blue">
+        <h3>📐 Pearson (r)</h3>
+        <ul>
+          <li>For <strong>interval or ratio</strong> (continuous) data</li>
+          <li>Data must be <strong>approximately normal</strong></li>
+          <li>Relationship must be <strong>linear</strong></li>
+          <li>Outliers should be minimal</li>
+          <li>Example: Correlation between salary (GHS) and years of experience</li>
+        </ul>
+      </div>
+      <div class="cmp-card cmp-purple">
+        <h3>🏅 Spearman (ρ)</h3>
+        <ul>
+          <li>For <strong>ordinal</strong> or <strong>ranked</strong> data</li>
+          <li>No normality assumption needed</li>
+          <li>Use when data is not linear or has outliers</li>
+          <li>Also use when Pearson's assumptions are violated</li>
+          <li>Example: Correlation between satisfaction rank (1-5 scale) and loyalty rank</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tbl-wrap mt2">
+      <table>
+        <thead><tr><th>Type</th><th>Also Called</th><th>Use For</th><th>Key Output</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Bivariate</strong></td><td>Zero-order correlation</td><td>Simple relationship between exactly 2 variables</td><td>r value and p-value</td></tr>
+          <tr><td><strong>Partial</strong></td><td>Controlled correlation</td><td>Relationship between 2 variables while <em>controlling for</em> a third</td><td>r value adjusted for control variable</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="example mt2">
+      <div class="ex-label">💡 Partial Correlation Example</div>
+      <p>You find a correlation between age and salary. But older workers also tend to have more experience. Partial correlation lets you measure the age-salary relationship <strong>while holding experience constant</strong> — to see if age matters on its own.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 26 – SECTION: REGRESSION ══ -->
+<div class="slide slide-section" data-num="06" id="s26">
+  <div class="sec-label">Session 3 · Part C</div>
+  <h2 class="sec-title">Regression <span>Analysis</span></h2>
+  <p class="sec-desc">From describing relationships to making actual predictions.</p>
+</div>
+
+<!-- ══ SLIDE 27 – REGRESSION ══ -->
+<div class="slide" id="s27">
+  <div class="inner">
+    <div class="label">Regression Analysis</div>
+    <h2 class="heading">What is <em>Regression</em>?</h2>
+    <p class="body-text">Regression goes one step beyond correlation. Where correlation says <em>"are these related?"</em>, regression says <em>"if I know X, what will Y be?"</em> — it lets you <strong>predict</strong>.</p>
+
+    <div class="compare">
+      <div class="cmp-card cmp-green">
+        <h3>📈 Simple Linear Regression</h3>
+        <ul>
+          <li>One independent variable (X) predicts one dependent variable (Y)</li>
+          <li>Equation: <strong>Y = β₀ + β₁X + ε</strong></li>
+          <li>β₀ = Y-intercept (value of Y when X = 0)</li>
+          <li>β₁ = slope (how much Y changes for each unit increase in X)</li>
+          <li>ε = error term (unexplained variation)</li>
+        </ul>
+      </div>
+      <div class="cmp-card cmp-blue">
+        <h3>📊 Multiple Regression</h3>
+        <ul>
+          <li>Two or more independent variables predict Y</li>
+          <li>Equation: <strong>Y = β₀ + β₁X₁ + β₂X₂ + ... + βₖXₖ + ε</strong></li>
+          <li>Controls for multiple factors simultaneously</li>
+          <li>More realistic for business (many factors affect outcomes)</li>
+          <li>Example: Sales predicted by advertising spend, price, and season</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="example mt2">
+      <div class="ex-label">💡 Business Example</div>
+      <p><strong>Simple:</strong> "For every additional GHS 1,000 spent on advertising (X), monthly revenue (Y) increases by GHS 4,500."<br>
+      Equation: Revenue = 20,000 + 4.5 × Advertising Spend<br><br>
+      <strong>Multiple:</strong> "Revenue is affected by advertising spend, number of sales staff, and time of year."<br>
+      Revenue = 15,000 + 4.5(Advertising) + 8,000(Staff) + 2,000(Q4 dummy)</p>
+    </div>
+
+    <div class="tbl-wrap mt2">
+      <table>
+        <thead><tr><th>Assumption</th><th>Plain English</th></tr></thead>
+        <tbody>
+          <tr><td><strong>DV is continuous</strong></td><td>The outcome variable must be on interval or ratio scale</td></tr>
+          <tr><td><strong>Linearity</strong></td><td>The relationship between X and Y should be a straight line (use scatter plot to check)</td></tr>
+          <tr><td><strong>Normality</strong></td><td>The residuals (errors/differences between predicted and actual) should be normally distributed</td></tr>
+          <tr><td><strong>Homoscedasticity</strong></td><td>The spread of errors should be even/constant across all levels of X (no fan shape)</td></tr>
+          <tr><td><strong>No multicollinearity</strong></td><td>In multiple regression, IVs should not be highly correlated with each other</td></tr>
+          <tr><td><strong>No autocorrelation</strong></td><td>Errors should be independent (important for time-series data)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 28 – READING REGRESSION OUTPUT ══ -->
+<div class="slide" id="s28">
+  <div class="inner">
+    <div class="label">Regression Analysis</div>
+    <h2 class="heading">Reading <em>Regression Output</em> (SPSS)</h2>
+    <p class="body-text">When you run a regression in SPSS, you get several key tables. Here's how to read them:</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Output</th><th>What It Shows</th><th>What to Look For</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong class="td-accent">R</strong></td>
+            <td>Correlation between predicted and actual Y values</td>
+            <td>Closer to 1.0 = better fit</td>
+          </tr>
+          <tr>
+            <td><strong class="td-purple">R² (R-squared)</strong></td>
+            <td>% of variation in Y explained by the model</td>
+            <td>R² = 0.65 means your IVs explain <strong>65%</strong> of why Y varies. Higher is better.</td>
+          </tr>
+          <tr>
+            <td><strong class="td-green">F-statistic (ANOVA table)</strong></td>
+            <td>Tests whether the overall model is significant</td>
+            <td>If p &lt; 0.05 → the model as a whole is significant</td>
+          </tr>
+          <tr>
+            <td><strong class="td-gold">β (Beta coefficients)</strong></td>
+            <td>The slope — how much Y changes per unit of X</td>
+            <td>Positive β = positive relationship; check p-value to see if each IV is significant</td>
+          </tr>
+          <tr>
+            <td><strong class="td-red">p-value (for each coefficient)</strong></td>
+            <td>Significance of each individual predictor</td>
+            <td>If p &lt; 0.05 → that variable significantly predicts Y; if p &gt; 0.05 → it doesn't</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="example mt2">
+      <div class="ex-label">💡 Sample Regression Interpretation</div>
+      <p>Output: R² = 0.72, F(2,97) = 124.3, p &lt; 0.001<br>
+      Training Hours: β = 0.52, p = 0.002 | Motivation: β = 0.38, p = 0.015<br><br>
+      <strong>How to report it:</strong> "Training hours and motivation together explain 72% of the variance in employee performance (R² = .72, F = 124.3, p &lt; .001). Training hours (β = .52, p = .002) and motivation (β = .38, p = .015) both significantly predict performance."</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 29 – QUIZ 2 ══ -->
+<div class="slide" id="s29">
+  <div class="inner">
+    <div class="label">Final Review ✏️</div>
+    <h2 class="heading">Part 2 <em>Review Quiz</em></h2>
+
+    <div class="quiz">
+      <div class="quiz-q">Q1: A researcher wants to compare the average exam scores of students taught using 3 different teaching methods (Lecture, Online, Blended). The scores are normally distributed. Which test should they use?</div>
+      <div class="quiz-opts" id="qC">
+        <button class="quiz-opt" onclick="chk(this,'qC',false,'fbC')">Independent samples t-test — comparing groups</button>
+        <button class="quiz-opt" onclick="chk(this,'qC',true,'fbC')">One-Way ANOVA — comparing means of more than 2 independent groups</button>
+        <button class="quiz-opt" onclick="chk(this,'qC',false,'fbC')">Paired t-test — because students are related</button>
+      </div>
+      <div class="quiz-fb" id="fbC"></div>
+    </div>
+
+    <div class="quiz mt2">
+      <div class="quiz-q">Q2: A study finds r = −0.78 between "employee burnout score" and "productivity score". What does this mean?</div>
+      <div class="quiz-opts" id="qD">
+        <button class="quiz-opt" onclick="chk(this,'qD',false,'fbD')">Burnout causes low productivity — strong causal link</button>
+        <button class="quiz-opt" onclick="chk(this,'qD',true,'fbD')">There is a strong negative relationship: higher burnout scores are associated with lower productivity</button>
+        <button class="quiz-opt" onclick="chk(this,'qD',false,'fbD')">Productivity causes burnout — the negative sign shows this</button>
+      </div>
+      <div class="quiz-fb" id="fbD"></div>
+    </div>
+
+    <div class="quiz mt2">
+      <div class="quiz-q">Q3: A regression model gives R² = 0.43. What does this mean?</div>
+      <div class="quiz-opts" id="qE">
+        <button class="quiz-opt" onclick="chk(this,'qE',false,'fbE')">The model is 43% accurate — it makes errors 57% of the time</button>
+        <button class="quiz-opt" onclick="chk(this,'qE',true,'fbE')">The independent variables explain 43% of the variation in the dependent variable</button>
+        <button class="quiz-opt" onclick="chk(this,'qE',false,'fbE')">The correlation between variables is 0.43</button>
+      </div>
+      <div class="quiz-fb" id="fbE"></div>
+    </div>
+
+    <div class="quiz mt2">
+      <div class="quiz-q">Q4: Your Shapiro-Wilk test gives p = 0.03 for a sample of n = 28. What should you do?</div>
+      <div class="quiz-opts" id="qF">
+        <button class="quiz-opt" onclick="chk(this,'qF',false,'fbF')">Proceed with parametric tests — the p-value is small so the test worked</button>
+        <button class="quiz-opt" onclick="chk(this,'qF',true,'fbF')">Use non-parametric tests or transform the data — p &lt; 0.05 means data is NOT normally distributed</button>
+        <button class="quiz-opt" onclick="chk(this,'qF',false,'fbF')">Use Kolmogorov-Smirnov instead — Shapiro-Wilk doesn't work for small samples</button>
+      </div>
+      <div class="quiz-fb" id="fbF"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 30 – COMPLETE SUMMARY TABLE ══ -->
+<div class="slide" id="s30">
+  <div class="inner">
+    <div class="label">Master Reference</div>
+    <h2 class="heading">Complete <em>Test Selection</em> Guide</h2>
+    <p class="body-text">Use this as your go-to reference when choosing which statistical test to run in SPSS.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Research Question</th><th>Groups / Design</th><th>Normal?</th><th>Use This Test</th></tr></thead>
+        <tbody>
+          <tr><td>Is my sample mean different from a benchmark?</td><td>1 group vs fixed value</td><td>Yes</td><td class="td-accent">One-Sample t-test</td></tr>
+          <tr><td>Are two different groups different?</td><td>2 independent groups</td><td>Yes</td><td class="td-accent">Independent t-test</td></tr>
+          <tr><td>Did the same group change over time?</td><td>1 group, 2 time points</td><td>Yes</td><td class="td-accent">Paired t-test</td></tr>
+          <tr><td>Are 3+ different groups different?</td><td>3+ independent groups</td><td>Yes</td><td class="td-green">One-Way ANOVA</td></tr>
+          <tr><td>Is there a relationship between 2 continuous variables?</td><td>2 variables</td><td>Yes</td><td class="td-purple">Pearson Correlation</td></tr>
+          <tr><td>Is there a relationship between 2 ranked variables?</td><td>2 ordinal variables</td><td>No</td><td class="td-purple">Spearman Correlation</td></tr>
+          <tr><td>Can X predict Y?</td><td>1 IV → 1 DV</td><td>Yes</td><td class="td-gold">Simple Regression</td></tr>
+          <tr><td>Can multiple Xs predict Y?</td><td>Multiple IVs → 1 DV</td><td>Yes</td><td class="td-gold">Multiple Regression</td></tr>
+          <tr><td>Are 2 groups different? (non-normal)</td><td>2 independent groups</td><td>No</td><td class="td-red">Mann-Whitney U</td></tr>
+          <tr><td>Did same group change? (non-normal)</td><td>1 group, 2 times</td><td>No</td><td class="td-red">Wilcoxon</td></tr>
+          <tr><td>Are 3+ groups different? (non-normal)</td><td>3+ independent groups</td><td>No</td><td class="td-red">Kruskal-Wallis</td></tr>
+          <tr><td>Are categorical variables related?</td><td>2 nominal variables</td><td>N/A</td><td style="color:var(--teal);font-weight:600">Chi-Square</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 31 – END ══ -->
+<div class="slide slide-end" id="s31">
+  <div class="cover-tag">Part 2 Complete 🎓</div>
+  <h1 class="cover-title" style="font-family:'Playfair Display',serif;font-size:clamp(2.5rem,5vw,4rem)">You've covered the <span style="color:var(--gold)">full course</span>.</h1>
+  <p class="cover-sub">Both sessions complete. Here's everything you've learned across Part 1 and Part 2.</p>
+  <div class="topics-grid">
+    <div class="topic-done">✅ Why Statistics?</div>
+    <div class="topic-done">✅ Descriptive vs Inferential</div>
+    <div class="topic-done">✅ Variables & Scales</div>
+    <div class="topic-done">✅ Sampling Methods</div>
+    <div class="topic-done">✅ Central Tendency</div>
+    <div class="topic-done">✅ Measures of Variation</div>
+    <div class="topic-done">✅ Hypothesis Testing</div>
+    <div class="topic-done">✅ Type I & II Errors</div>
+    <div class="topic-done">✅ Normal Distribution</div>
+    <div class="topic-done">✅ Normality Testing</div>
+    <div class="topic-done">✅ t-Tests (3 types)</div>
+    <div class="topic-done">✅ One-Way ANOVA</div>
+    <div class="topic-done">✅ Correlation</div>
+    <div class="topic-done">✅ Regression Analysis</div>
+    <div class="topic-done">✅ Test Selection Guide</div>
+    <div class="topic-done">✅ Parametric vs Non-Parametric</div>
+  </div>
+</div>
+
+</div><!-- /slides -->
+
+<nav>
+  <button id="btn-prev" onclick="navigate(-1)" disabled>← Prev</button>
+  <span id="slide-counter">1 / 31</span>
+  <button id="btn-next" onclick="navigate(1)">Next →</button>
+</nav>
+
+<script>
+const total = 31;
+let cur = 1;
+
+function showSlide(n) {
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  document.getElementById('s' + n).classList.add('active');
+  cur = n;
+  document.getElementById('slide-counter').textContent = n + ' / ' + total;
+  document.getElementById('btn-prev').disabled = n === 1;
+  document.getElementById('btn-next').disabled = n === total;
+  document.getElementById('progress-bar').style.width = ((n-1)/(total-1)*100) + '%';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function navigate(d) {
+  const nx = cur + d;
+  if (nx >= 1 && nx <= total) showSlide(nx);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') navigate(-1);
+});
+
+function showTab(group, id, btn) {
+  document.querySelectorAll('[id^="' + group + '-"]').forEach(p => p.classList.remove('active'));
+  btn.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(group + '-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleAcc(id) {
+  const item = document.getElementById(id);
+  const open = item.classList.contains('open');
+  // close all in same parent
+  item.parentElement.querySelectorAll('.acc-item').forEach(i => i.classList.remove('open'));
+  if (!open) item.classList.add('open');
+}
+
+const explanations = {
+  qA: { ok: 'Correct! The extreme salary of one executive pulled the mean way up. When outliers exist, the median gives a fairer picture of what a "typical" employee earns.', no: 'The mean is heavily influenced by extreme values (outliers). With one GHS 80,000 outlier, the mean is distorted. Median — the middle value — would be far more representative here.' },
+  qB: { ok: 'Exactly right! Both companies earn the same on average, but their consistency is very different. Company A\'s small SD means sales are predictable. Company B\'s large SD means monthly sales swing wildly — much riskier.', no: 'Same mean doesn\'t mean same performance. Standard deviation measures spread or consistency. Company B\'s huge SD (18,000) means its sales vary massively from month to month — far less stable than Company A.' },
+  qC: { ok: 'Correct! When comparing means across 3 or more independent groups with normally distributed data, One-Way ANOVA is the right tool. A t-test only handles 2 groups.', no: 'There are 3 groups (Lecture, Online, Blended), not 2. The t-test can only compare 2 groups. One-Way ANOVA is designed specifically for 3 or more independent group comparisons.' },
+  qD: { ok: 'Right! r = −0.78 is a strong negative correlation: as burnout increases, productivity decreases. But remember — correlation ≠ causation. Other factors could explain this pattern.', no: 'The sign shows direction, not cause. A negative correlation means the two variables move in opposite directions. It tells us about association, NOT that one causes the other.' },
+  qE: { ok: 'Exactly! R² = 0.43 means your independent variables collectively account for 43% of why the dependent variable varies. The other 57% is explained by factors not in the model.', no: 'R² is not about accuracy or prediction rate — it\'s about explained variance. R² = 0.43 means 43% of the variation in Y is explained by the X variables in the model.' },
+  qF: { ok: 'Correct! p = 0.03 < 0.05 means the data is significantly different from normal — i.e., NOT normally distributed. With n = 28 (small sample), Shapiro-Wilk is the right test, and its result tells you to use non-parametric alternatives.', no: 'When p < 0.05 in a normality test, it means data is NOT normal. Shapiro-Wilk IS the right test for small samples (n < 50). Since data violates normality, switch to non-parametric tests or transform the data.' }
+};
+
+function chk(btn, group, correct, fbId) {
+  const container = document.getElementById(group);
+  if (container.dataset.answered) return;
+  container.dataset.answered = 'true';
+  container.querySelectorAll('.quiz-opt').forEach(b => b.style.pointerEvents = 'none');
+  const fb = document.getElementById(fbId);
+  const exp = explanations[group];
+  if (correct) {
+    btn.classList.add('correct');
+    fb.className = 'quiz-fb show ok';
+    fb.innerHTML = '✅ <strong>Correct!</strong> ' + exp.ok;
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'quiz-fb show no';
+    fb.innerHTML = '❌ <strong>Not quite.</strong> ' + exp.no;
+  }
+}
+</script>
+</body>
+</html>
